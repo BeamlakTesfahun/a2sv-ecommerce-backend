@@ -14,7 +14,7 @@ import {
 } from "./product.service.js";
 import { uploadImageBufferToCloudinary } from "../../libs/cloudinary.js";
 
-const IdParam = z.object({ id: z.string().uuid() });
+const IdParam = z.object({ id: z.uuid() });
 
 // CREATE ADMIN
 export async function createProduct(
