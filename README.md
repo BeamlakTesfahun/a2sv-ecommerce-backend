@@ -48,7 +48,7 @@ This project was developed as part of the **A2SV Technical Interview** backend a
 ### Clone the repository
 
 git clone https://github.com/BeamlakTesfahun/a2sv-ecommerce-backend.git
-cd <a2sv-ecommerce-backend>
+cd <2sv-ecommerce-backend
 
 ### Install dependencies
 
