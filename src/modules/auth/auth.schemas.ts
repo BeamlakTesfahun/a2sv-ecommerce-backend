@@ -6,7 +6,7 @@ export const registerSchema = z.object({
     .regex(/^[a-zA-Z0-9]+$/)
     .min(3)
     .max(30),
-  email: z.string().email(),
+  email: z.email(),
   password: z
     .string()
     .min(8)
@@ -17,6 +17,6 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(1),
 });
