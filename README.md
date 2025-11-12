@@ -1,7 +1,6 @@
 # E-Commerce Platform Backend
 
-A RESTful API built with **Node.js**, **TypeScript**, **Express**, and **Prisma (PostgreSQL)** for managing users, products, and orders.  
-This project was developed as part of the **A2SV Technical Interview** backend assessment.
+A RESTful API built with **Node.js**, **TypeScript**, **Express**, and **Prisma (PostgreSQL)** for managing users, products, and orders.
 
 ---
 

@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "../", // allow importing tests/utils/*
+    "noEmit": true, // don't emit test files
+    "types": ["vitest/globals", "node"]
+  },
+  "include": ["../src/**/*.ts", "./**/*.ts", "../scripts/**/*.ts"]
+}
