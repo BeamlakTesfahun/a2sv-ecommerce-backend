@@ -15,6 +15,7 @@ A RESTful API built with **Node.js**, **TypeScript**, **Express**, and **Prisma 
   - Full CRUD for products (Admin only)
   - Optional image upload via **Cloudinary**
   - Public product listing with pagination and search
+  - **LRU caching** for product listing to improve performance
 
 - **Order Management**
   - Authenticated users can place orders
@@ -24,6 +25,16 @@ A RESTful API built with **Node.js**, **TypeScript**, **Express**, and **Prisma 
 - **Validation & Error Handling**
   - Strong input validation with **Zod**
   - Centralized error handler for consistent responses
+
+- **Security Enhancements**
+  - Global and route-level **rate limiting** to prevent abuse
+  - Safe trust proxy configuration for Express
+  - Sanitized API responses (no sensitive data exposed)
+
+- **Testing**
+  - Unit and integration tests using **Vitest** and **Supertest**
+  - Prisma client, JWT, and rate limiter mocks for isolated testing
+  - Automated coverage for authentication, product, and order modules
 
 ---
 
@@ -38,6 +49,9 @@ A RESTful API built with **Node.js**, **TypeScript**, **Express**, and **Prisma 
 | Authentication | JWT + bcrypt         |
 | Validation     | Zod                  |
 | File Upload    | Multer + Cloudinary  |
+| Caching        | LRU Cache            |
+| Security       | express-rate-limit   |
+| Testing        | Vitest + Supertest   |
 | Dev Tools      | tsx, nodemon, dotenv |
 
 ---
@@ -46,8 +60,8 @@ A RESTful API built with **Node.js**, **TypeScript**, **Express**, and **Prisma 
 
 ### Clone the repository
 
-git clone https://github.com/BeamlakTesfahun/a2sv-ecommerce-backend.git
-cd <2sv-ecommerce-backend
+git clone https://github.com/BeamlakTesfahun/a2sv-ecommerce-backend.git  
+cd a2sv-ecommerce-backend
 
 ### Install dependencies
 
@@ -57,27 +71,27 @@ npm install
 
 Create a `.env` file in the project root and define the following variables:
 
-# Database Configuration
+#### Database Configuration
 
 DATABASE_URL=
 
-# Server Settings
+#### Server Settings
 
 PORT=  
 NODE_ENV=
 
-# JWT Authentication
+#### JWT Authentication
 
 JWT_SECRET=
 
-# PostgreSQL (for Docker)
+#### PostgreSQL (for Docker)
 
 POSTGRES_USER=  
 POSTGRES_DB=  
 POSTGRES_PASSWORD=  
 POSTGRES_PORT=
 
-# Cloudinary Configuration
+#### Cloudinary Configuration
 
 CLOUDINARY_CLOUD_NAME=  
 CLOUDINARY_API_KEY=  
@@ -102,8 +116,18 @@ npx prisma generate
 Development mode:  
 npm run dev
 
-Build & run production:  
+Build and run production:  
 npm run build && npm start
+
+---
+
+## Testing
+
+Run unit and integration tests with:
+
+npm run test
+
+Tests automatically disable rate limiters and mock Prisma, JWT, and hash functions to ensure isolated, deterministic results.
 
 ---
 
@@ -149,6 +173,8 @@ Full endpoint details, request/response schemas, and examples are available in t
 - **Zod** handles runtime input validation gracefully.
 - **Cloudinary** for secure and reliable image uploads.
 - **PostgreSQL** chosen for ACID compliance and relational integrity.
+- **Rate Limiting** to protect endpoints from excessive requests.
+- **Caching** on product listing endpoints for performance optimization.
 - **Layered architecture**:
   - Controllers handle HTTP requests/responses.
   - Services encapsulate core business logic.
@@ -162,6 +188,7 @@ Full endpoint details, request/response schemas, and examples are available in t
 | npm run dev            | Start development server (tsx watch mode) |
 | npm run build          | Compile TypeScript to JavaScript          |
 | npm start              | Run compiled production build             |
+| npm run test           | Run all unit and integration tests        |
 | npx prisma studio      | Open Prisma DB UI                         |
 | npx prisma migrate dev | Apply database migrations                 |
 
