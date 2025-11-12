@@ -66,19 +66,26 @@ export async function deleteProductSvc(id: string) {
   await prisma.product.delete({ where: { id } });
 }
 
+// for normalizing price field
+function asNumber(x: unknown): number {
+  if (typeof x === "number") return x;
+  if (typeof x === "string") return parseFloat(x);
+  // Prisma.Decimal or others:
+  return parseFloat(x?.toString?.() ?? "0");
+}
+
 export async function listProductsSvc(opts: {
   page?: number;
   pageSize?: number;
-  search?: string; // undefined means no filter
+  search?: string;
 }) {
   const page = Math.max(1, Number(opts.page ?? 1));
   const pageSize = Math.max(1, Number(opts.pageSize ?? 10));
-
   const where: Prisma.ProductWhereInput = opts.search
     ? { name: { contains: opts.search, mode: "insensitive" } }
     : {};
 
-  const [total, products] = await Promise.all([
+  const [total, raw] = await Promise.all([
     prisma.product.count({ where }),
     prisma.product.findMany({
       where,
@@ -87,6 +94,9 @@ export async function listProductsSvc(opts: {
       orderBy: { createdAt: "desc" },
     }),
   ]);
+
+  // normalize price to number
+  const products = raw.map((p) => ({ ...p, price: asNumber(p.price) }));
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   return { page, pageSize, total, totalPages, products };
