@@ -15,7 +15,8 @@
   "type": "module",
   "main": "server.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "start": "tsx src/server.ts",
     "dev": "tsx watch src/server.ts",
     "prisma:generate": "prisma generate",
@@ -42,14 +43,17 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/multer": "^2.0.0",
-    "@types/node": "^24.10.0",
+    "@types/node": "^24.10.1",
+    "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.46.3",
     "@typescript-eslint/parser": "^8.46.3",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "prettier": "^3.6.2",
+    "supertest": "^7.1.4",
     "tsx": "^4.20.6",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.8"
   }
 }
