@@ -1,3 +1,4 @@
+// src/modules/products/product.controller.ts
 import type { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import {
@@ -10,11 +11,11 @@ import {
   updateProductSvc,
   deleteProductSvc,
   getProductOrThrowSvc,
-  listProductsSvc,
 } from "./product.service.js";
 import { uploadImageBufferToCloudinary } from "../../libs/cloudinary.js";
+import { getProductsCached, invalidateProductLists } from "./product.cache.js";
 
-const IdParam = z.object({ id: z.uuid() });
+const IdParam = z.object({ id: z.string().uuid() });
 
 // CREATE ADMIN
 export async function createProduct(
@@ -30,7 +31,7 @@ export async function createProduct(
       ? await uploadImageBufferToCloudinary(file.buffer)
       : null;
     const created = await createProductSvc(dto, imageUrl);
-
+    invalidateProductLists();
     return res
       .status(201)
       .json({ success: true, message: "Product created", object: created });
@@ -55,6 +56,7 @@ export async function updateProduct(
     const { id } = IdParam.parse(req.params);
     const dto = updateProductSchema.parse(req.body);
     const updated = await updateProductSvc(id, dto);
+    invalidateProductLists();
     return res
       .status(200)
       .json({ success: true, message: "Product updated", object: updated });
@@ -79,18 +81,12 @@ export async function getProducts(
     const { page, pageSize, search } = listProductsQuerySchema.parse(req.query);
     const opts = search ? { page, pageSize, search } : { page, pageSize };
 
-    const { total, totalPages, products } = await listProductsSvc(opts);
+    const { total, totalPages, products } = await getProductsCached(
+      opts as { page?: number; pageSize?: number; search?: string }
+    );
 
-    // decimal conversion
-    const normalized = products.map((p: any) => ({
-      ...p,
-      price:
-        typeof p.price === "object"
-          ? parseFloat(p.price.toString())
-          : typeof p.price === "string"
-            ? parseFloat(p.price)
-            : p.price,
-    }));
+    // client-side cache hint (60s)
+    res.setHeader("Cache-Control", "public, max-age=60");
 
     return res.status(200).json({
       success: true,
@@ -99,7 +95,7 @@ export async function getProducts(
       pageSize,
       totalPages,
       totalProducts: total,
-      products: normalized,
+      products,
     });
   } catch (err) {
     next(err);
@@ -132,6 +128,7 @@ export async function deleteProduct(
   try {
     const { id } = IdParam.parse(req.params);
     await deleteProductSvc(id);
+    invalidateProductLists();
     return res
       .status(200)
       .json({ success: true, message: "Product deleted successfully" });
